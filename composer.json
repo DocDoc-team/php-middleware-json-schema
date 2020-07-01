@@ -1,0 +1,41 @@
+{
+    "name": "docdoc/php-middleware-json-schema",
+    "description": "",
+    "type": "library",
+    "keywords": [
+        "middleware",
+        "validator",
+        "psr-7",
+        "psr-15"
+    ],
+    "config": {
+        "optimize-autoloader": true
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "alexpts",
+            "email": "alexpts@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": "~7.4",
+        "psr/http-message": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "opis/json-schema": "^1.0",
+        "symfony/yaml": "^5.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "DD\\Md\\JsonValidator\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\DD\\Md\\JsonValidator\\": "test"
+        }
+    }
+}
