@@ -56,23 +56,31 @@ class JsonSchemaManager
 
 		$fileConfigs = $this->parserYaml->parseFile($path);
 		foreach ($fileConfigs as $name => $validatorConfig) {
-			if ($this->configTree[$name] ?? null) {
-				throw new RuntimeException("Validator `$name` already defined", 500);
-			}
-
-			$this->configTree[$name] = $validatorConfig;
+			$this->addConfig($name, $validatorConfig);
 		}
+	}
+
+	public function addConfig(string $name, array $config): self
+	{
+		if ($this->configTree[$name] ?? null) {
+			throw new RuntimeException("Validator `$name` already defined", 500);
+		}
+
+		$this->configTree[$name] = $config;
+		return $this;
 	}
 
 	/**
 	 * Добавить yml файл с конфигурацией относительно директории с конфигами
 	 *
 	 * @param string $configFile
+	 * @return $this
 	 * @throws RuntimeException
 	 */
-	public function addRelFile(string $configFile): void
+	public function addRelFile(string $configFile): self
 	{
 		$path = $this->configsDir . '/' . $configFile;
 		$this->addFile($path);
+		return $this;
 	}
 }

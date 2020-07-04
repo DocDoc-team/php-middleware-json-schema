@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class JsonSchemaManagerTest extends TestCase
 {
+
 	protected JsonSchemaManager $manager;
 
 	public function setUp(): void

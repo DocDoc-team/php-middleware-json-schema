@@ -1,23 +1,26 @@
 <?php
 declare(strict_types=1);
 
-namespace DD\Md\JsonValidator;
+namespace DD\Md\JsonValidator\Adapter;
 
+use DD\Md\JsonValidator\JsonSchemaManager;
 use Opis\JsonSchema\Schema;
 use Opis\JsonSchema\ValidationError;
 use Opis\JsonSchema\ValidationResult;
 use Opis\JsonSchema\Validator;
-use function GuzzleHttp\json_encode;
+use stdClass;
 
-class JsonSchemaValidator
+class Base
 {
 	protected JsonSchemaManager $schemaManager;
 	protected Validator $validator;
+	protected int $maxErrors = 5;
 
-	public function __construct(JsonSchemaManager $schemaManager)
+	public function __construct(JsonSchemaManager $schemaManager, int $maxErrors = 5)
 	{
 		$this->schemaManager = $schemaManager;
 		$this->validator = new Validator;
+		$this->maxErrors = $maxErrors;
 	}
 
 	public function getConfig(array $schemaName): array
@@ -39,7 +42,7 @@ class JsonSchemaValidator
 	public function validateByConfig(object $data, array $config): array
 	{
 		$schema = $this->createSchema($config);
-		$result = $this->validator->schemaValidation($data, $schema);
+		$result = $this->validator->schemaValidation($data, $schema, $this->maxErrors);
 		return $this->addErrors($result);
 	}
 
@@ -91,7 +94,7 @@ class JsonSchemaValidator
 
 		foreach ($error->subErrors() as $subError) {
 			$sub = $this->getErrorPath($subError);
-			array_push($treeName, ...$sub    );
+			array_push($treeName, ...$sub);
 		}
 
 		return $treeName;
@@ -101,5 +104,15 @@ class JsonSchemaValidator
 	{
 		$json = json_encode((object)$config, JSON_UNESCAPED_UNICODE);
 		return Schema::fromJsonString($json);
+	}
+
+	protected function convertToObject(array $params): object
+	{
+		if ($params === []) {
+			return new stdClass;
+		}
+
+		$json = json_encode($params, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+		return json_decode($json, false, 512, JSON_THROW_ON_ERROR);
 	}
 }
